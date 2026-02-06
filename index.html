@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#000000" />
   <title>Hollow VPN</title>
 
-  <!-- база для относительных путей -->
   <base id="app-base" href="./" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -14,13 +13,17 @@
     :root{
       --bg-black:#000000;
 
+      /* Цвета для градиента кольца */
+      --ring-start: #00E5FF;   /* Циан */
+      --ring-mid: #A35CFF;     /* Фиолетовый */
+      --ring-end: #FF2093;     /* Розовый */
+
       --accent-cyan:   #00E5FF;
       --accent-cyan-2: #29D9ED;
 
       --accent-pink:   #FF2093;
       --accent-pink-2: #FF47AA;
 
-      /* ✅ дополнительный “мостик” между розовым и бирюзовым (делает переход мягче) */
       --accent-mix: #9B48FF;
 
       --pill-grad: linear-gradient(
@@ -44,15 +47,16 @@
 
       /* прогресс-кольцо */
       --ring-size: clamp(190px, 58vw, 230px);
-      --ring-hole: 72%;
-      --ring-band: 74%;
-
-      /* ✅ ВАЖНО: старт прогресса строго сверху (12 часов) + “стык” прячем под иконку */
-      --ring-start: -90deg;
+      --ring-stroke: 12px;
     }
 
     *{box-sizing:border-box;}
-    html,body{height:100%;}
+    html,body{
+      height:100%;
+      overflow:hidden;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+    }
     body{
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
       -webkit-font-smoothing: antialiased;
@@ -80,11 +84,16 @@
       min-height:100vh;
       min-height:100dvh;
 
-      overflow-x:hidden;
+      overflow:hidden;
       position:relative;
       touch-action: manipulation;
       overscroll-behavior: none;
     }
+
+    html::-webkit-scrollbar{ width:0; height:0; }
+    body::-webkit-scrollbar{ width:0; height:0; }
+    .content-with-back::-webkit-scrollbar{ width:0; height:0; }
+    .doc-box::-webkit-scrollbar{ width:0; height:0; }
 
     body::after{
       content:"";
@@ -130,13 +139,12 @@
 
     .screen{display:none;}
     .screen.is-active{display:flex;}
-    .fade-in{animation:fadeIn .22s ease-in-out;}
+    .fade-in{animation:fadeIn .20s ease-in-out;}
     @keyframes fadeIn{
       from{opacity:0;transform:translateY(10px);}
       to{opacity:1;transform:translateY(0);}
     }
 
-    /* ================== ЛОГО ================== */
     .logo-section{
       margin-top: 10px;
       position: relative;
@@ -194,7 +202,6 @@
       -webkit-user-drag:none;
     }
 
-    /* ================== ТИПОГРАФИКА ================== */
     h2{
       margin:0 0 12px;
       font-size: 28px;
@@ -214,11 +221,26 @@
     .user-header{
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      align-items:flex-start;
       margin-top: 14px;
       margin-bottom: 10px;
       gap:10px;
+      flex-wrap:nowrap;
       flex-shrink:0;
+    }
+    .greet-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+      flex:1 1 auto;
+      max-width:100%;
+    }
+    .greet{
+      font-size: 16px;
+      font-weight: 900;
+      color: rgba(255,255,255,.78);
+      letter-spacing:.2px;
     }
     .name{
       font-size:22px;
@@ -227,12 +249,17 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
+      display:block;
+      max-width:100%;
       text-shadow: 0 10px 28px rgba(0,0,0,.55);
     }
     .date{
       color: rgba(255,255,255,.65);
       font-size: 13px;
       white-space:nowrap;
+      margin-top: 2px;
+      flex:0 0 auto;
+      text-align:right;
     }
 
     .status-line{
@@ -251,7 +278,6 @@
       box-shadow: 0 0 16px rgba(67,207,224,.22);
     }
 
-    /* ================== КНОПКИ ================== */
     .btn{
       width:100%;
       border:none;
@@ -323,7 +349,6 @@
       );
       mix-blend-mode: overlay;
       transform: translateX(-110%);
-      /* ✅ медленнее “переливание” */
       animation: buySheen 4.8s infinite;
       pointer-events:none;
       width: 220%;
@@ -346,7 +371,6 @@
       flex-shrink:0;
     }
 
-    /* BACK BUTTON */
     .back-button{
       position:absolute;
       top:18px; left:18px;
@@ -379,12 +403,13 @@
       flex:1;
       overflow-y:auto;
       -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
       padding-bottom:10px;
       display:flex;
       flex-direction:column;
     }
 
-    /* ================== Профиль ================== */
     .profile-info-item{
       display:flex;
       justify-content:space-between;
@@ -437,14 +462,12 @@
     .icon-dollar{ color: var(--icon-green); }
     .btn-text{ flex:1 1 auto; text-align:left; z-index:2; }
 
-    /* Транзакции */
     .transaction-item{ display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.07); }
     .transaction-details{display:flex;flex-direction:column;min-width:0;}
     .transaction-title{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;color:rgba(255,255,255,.95);font-size:15px;}
     .transaction-date{color:rgba(255,255,255,.60);font-size:12px;}
     .transaction-amount{font-weight:950;white-space:nowrap;color:rgba(255,255,255,.92);font-size:15px;}
 
-    /* Оплата */
     .payment-link-item{
       padding:14px;
       border:1px solid rgba(255,255,255,0.08);
@@ -460,192 +483,88 @@
     .payment-link-title{font-weight:950;color:rgba(255,255,255,.95);font-size:15px;}
     .payment-link-desc{color:rgba(255,255,255,.60);font-size:12px;margin-top:4px;}
 
-    /* ================== SETUP ================== */
     .setup-wrap{display:flex;flex-direction:column;gap:14px; flex:1; justify-content: center;}
     .setup-hero{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:0;}
 
+    /* ===== НОВОЕ КОЛЬЦО ПРОГРЕССА ===== */
     .progress-ring{
       width: var(--ring-size);
       height: var(--ring-size);
-      border-radius: 50%;
       position: relative;
       display:flex;
       align-items:center;
       justify-content:center;
-
-      background: radial-gradient(circle, rgba(20,20,25,1) 0%, rgba(10,10,12,1) 100%);
-      box-shadow: 0 18px 56px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,0.05);
-      overflow:hidden;
       flex-shrink:0;
-      transform: translateZ(0);
     }
 
-    .ring-track{
-      position:absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: conic-gradient(from var(--ring-start), rgba(255,255,255,0.10), rgba(255,255,255,0.04), rgba(255,255,255,0.10));
-      -webkit-mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      opacity: .55;
-      pointer-events:none;
-    }
-
-    .gradient-soft{
-      position:absolute;
-      inset:-3px; /* чуть шире — мягче край */
-      border-radius: 50%;
-      background:
-        conic-gradient(
-          from var(--ring-start),
-          /* ✅ делаем “перетекание” мягче: розовый → микс → бирюзовый */
-          var(--accent-pink)      0deg,
-          var(--accent-pink-2)    calc(var(--pdeg) * .18),
-          var(--accent-mix)       calc(var(--pdeg) * .42),
-          var(--accent-cyan)      calc(var(--pdeg) * .68),
-          var(--accent-cyan-2)    var(--pdeg),
-          rgba(255,255,255,0.06)  var(--pdeg),
-          rgba(255,255,255,0.00)  360deg
-        );
-
-      -webkit-mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-
-      /* ✅ сильнее “молоко” и сглаживание стыка */
-      filter: blur(26px) saturate(1.35);
-      opacity: .98;
-      pointer-events:none;
-      transition: --pdeg 560ms cubic-bezier(.2,.9,.2,1);
-    }
-
-    .gradient-crisp{
-      position:absolute;
-      inset:0;
-      border-radius: 50%;
-      background:
-        /* “блик” на конце прогресса */
-        conic-gradient(
-          from var(--ring-start),
-          rgba(255,255,255,0.00) 0deg,
-          rgba(255,255,255,0.00) calc(var(--pdeg) - 1.8deg),
-          rgba(255,255,255,0.22) var(--pdeg),
-          rgba(255,255,255,0.00) calc(var(--pdeg) + 1.8deg),
-          rgba(255,255,255,0.00) 360deg
-        ),
-        conic-gradient(
-          from var(--ring-start),
-          var(--accent-pink)      0deg,
-          var(--accent-pink-2)    calc(var(--pdeg) * .18),
-          var(--accent-mix)       calc(var(--pdeg) * .42),
-          var(--accent-cyan)      calc(var(--pdeg) * .68),
-          var(--accent-cyan-2)    var(--pdeg),
-          rgba(255,255,255,0.00)  var(--pdeg),
-          rgba(255,255,255,0.00)  360deg
-        );
-
-      -webkit-mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-
-      /* ✅ чуть больше blur, чтобы стык между цветами не “рубил” */
-      filter: blur(2.2px) saturate(1.25);
-      opacity: .68;
-      pointer-events:none;
-      transition: --pdeg 560ms cubic-bezier(.2,.9,.2,1);
-    }
-
-    /* ✅ ФИКС “стыка” в месте старта (теперь он сверху и прячется под иконкой) */
-    .ring-seam-fog{
-      position:absolute;
-      inset:-12px;
-      border-radius:50%;
-      background:
-        conic-gradient(
-          from var(--ring-start),
-          rgba(0,0,0,0) 0deg,
-          rgba(255,255,255,0.18) 6deg,
-          rgba(255,255,255,0.00) 26deg,
-          rgba(0,0,0,0) 360deg
-        );
-      -webkit-mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      filter: blur(34px);
-      opacity: .78;
-      mix-blend-mode: screen;
-      pointer-events:none;
-    }
-    .ring-seam-fog2{
-      position:absolute;
-      inset:-18px;
-      border-radius:50%;
-      background:
-        conic-gradient(
-          from var(--ring-start),
-          rgba(0,0,0,0) 0deg,
-          rgba(255,32,147,0.22) 8deg,
-          rgba(155,72,255,0.20) 16deg,
-          rgba(0,229,255,0.18) 24deg,
-          rgba(0,0,0,0) 38deg,
-          rgba(0,0,0,0) 360deg
-        );
-      -webkit-mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      mask: radial-gradient(closest-side, transparent var(--ring-hole), #000 var(--ring-band));
-      filter: blur(42px);
-      opacity: .58;
-      mix-blend-mode: screen;
-      pointer-events:none;
-    }
-
-    .ring-overlay-border{
+    .progress-ring svg{
       position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.06);
-      pointer-events: none;
+      top: 0;
+      left: 0;
+      filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
     }
 
-    .ring-pulse{ animation: ringPulse .7s ease-out; }
+    .ring-bg{
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: var(--ring-stroke);
+      transform-origin: center;
+      transform: rotate(-90deg);
+    }
+
+    .ring-progress{
+      fill: none;
+      stroke: url(#ringGradient);
+      stroke-width: var(--ring-stroke);
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center;
+      transform: rotate(-90deg);
+    }
+
+    .ring-pulse{
+      animation: ringPulse 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     @keyframes ringPulse{
       0%{ transform: scale(1); }
-      50%{ transform: scale(1.02); }
+      50%{ transform: scale(1.03); }
       100%{ transform: scale(1); }
     }
 
     .hero-icon{
-      width:80px;height:80px;
-      border-radius: 28px;
-      display:flex; align-items:center; justify-content:center;
+      width:92px;
+      height:92px;
+      border-radius: 50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
 
       background:
-        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)) padding-box,
-        linear-gradient(135deg, var(--accent-cyan), var(--accent-pink)) border-box;
+        radial-gradient(circle, rgba(20,20,25,1) 0%, rgba(10,10,12,1) 100%);
 
-      border: 1.5px solid transparent;
-      box-shadow: 0 16px 42px rgba(0,0,0,.58);
-      z-index:2;
-      overflow:hidden;
+      border: 2px solid rgba(255,255,255,0.12);
+      box-shadow: 
+        0 0 0 1px rgba(0,0,0,.35),
+        0 18px 44px rgba(0,0,0,.75),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+
+      z-index:10;
       position:relative;
       flex-shrink:0;
     }
-    .hero-icon::after{
-      content:"";
-      position:absolute;
-      inset:-30px -60px auto -60px;
-      height:120px;
-      background: radial-gradient(closest-side, rgba(255,255,255,.50), transparent 70%);
-      transform: rotate(12deg);
-      opacity:.16;
-      filter: blur(10px);
-      pointer-events:none;
-    }
+
     .hero-icon svg{
-      width:40px;height:40px;
+      width:44px;
+      height:44px;
       stroke:#fff;
-      stroke-width:2.6;
+      stroke-width:2.4;
       fill:none;
       stroke-linecap:round;
       stroke-linejoin:round;
-      filter: drop-shadow(0 0 10px rgba(0,0,0,.35));
+      filter: drop-shadow(0 0 12px rgba(67,207,224,.35));
       z-index:2;
+      position:relative;
     }
 
     .setup-title{
@@ -690,18 +609,51 @@
       font-size: 13.5px;
       line-height: 1.65;
       overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
       padding-right: 6px;
       flex:1;
     }
     .doc-box strong{ color: rgba(255,255,255,.92); }
 
-    @property --pdeg { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    .faq-list{ display:flex; flex-direction:column; gap:10px; margin-top: 10px; }
+    details.faq{
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.03);
+      border-radius: 18px;
+      padding: 12px 14px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.38);
+    }
+    details.faq summary{
+      cursor:pointer;
+      list-style:none;
+      font-weight: 950;
+      color: rgba(255,255,255,.92);
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      -webkit-tap-highlight-color:transparent;
+    }
+    details.faq summary::-webkit-details-marker{ display:none; }
+    .faq-body{
+      margin-top: 10px;
+      color: rgba(255,255,255,.70);
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .chev{
+      color: rgba(255,255,255,.70);
+      font-weight: 900;
+    }
 
     @media (prefers-reduced-motion: reduce){
       .fade-in{ animation: none; }
       .btn-buy::before{ animation: none; opacity: .25; }
       .ring-pulse{ animation: none; }
-      .gradient-soft, .gradient-crisp{ transition: none; }
+      .ring-progress{ transition: none; }
     }
   </style>
 </head>
@@ -717,7 +669,10 @@
     </div>
 
     <div class="user-header">
-      <span class="name" id="user-name">Приветствую!</span>
+      <div class="greet-wrap">
+        <div class="greet">Привет</div>
+        <div class="name" id="user-name">Тестовый пользователь</div>
+      </div>
       <span class="date" id="user-id">ID: 000000</span>
     </div>
 
@@ -735,7 +690,7 @@
 
     <div class="grid">
       <button class="btn btn-outline" id="profile-btn">👤 Профиль</button>
-      <button class="btn btn-outline" id="support-btn-main">💬 Поддержка</button>
+      <button class="btn btn-outline" id="referral-btn-main">🎁 Рефералы</button>
     </div>
   </div>
 
@@ -751,21 +706,25 @@
     <div class="content-with-back setup-wrap">
       <div class="setup-hero">
         <div class="progress-ring" id="progress-ring">
-          <div class="ring-track"></div>
-          <div class="gradient-soft"  id="progress-soft"  style="--pdeg: 0deg;"></div>
-          <div class="gradient-crisp" id="progress-arc"   style="--pdeg: 0deg;"></div>
-
-          <!-- ✅ мягкий “туман” на старте (теперь старт сверху под иконкой) -->
-          <div class="ring-seam-fog"></div>
-          <div class="ring-seam-fog2"></div>
-
-          <div class="ring-overlay-border"></div>
+          <svg width="100%" height="100%" viewBox="0 0 240 240">
+            <defs>
+              <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00FFF5;stop-opacity:1" />
+                <stop offset="25%" style="stop-color:#00E5FF;stop-opacity:1" />
+                <stop offset="60%" style="stop-color:#A35CFF;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#FF2093;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg" cx="120" cy="120" r="106" />
+            <circle class="ring-progress" id="ring-circle" cx="120" cy="120" r="106" 
+                    stroke-dasharray="666" stroke-dashoffset="666" />
+          </svg>
           <div class="hero-icon" id="hero-icon"></div>
         </div>
 
         <div class="setup-title" id="setup-title">Приложение</div>
         <div class="setup-desc" id="setup-desc">
-          Установите v2RayTun. Кнопка откроет правильную страницу для вашего устройства.
+          Установите v2RayTun и вернитесь к этому экрану. Кнопка откроет страницу для вашего устройства.
         </div>
       </div>
 
@@ -848,7 +807,7 @@
           <span class="btn-text">Реферальная программа</span>
         </button>
 
-        <button class="btn lux-row" id="profile-support-btn">
+        <button class="btn lux-row" id="help-btn">
           <span class="icon-badge">
             <span class="btn-icon">
               <svg viewBox="0 0 24 24">
@@ -856,7 +815,7 @@
               </svg>
             </span>
           </span>
-          <span class="btn-text">Связаться с поддержкой</span>
+          <span class="btn-text">FAQ и поддержка</span>
         </button>
 
         <button class="btn lux-row" id="agreement-btn">
@@ -885,6 +844,78 @@
           <span class="btn-text">Политика конфиденциальности</span>
         </button>
       </div>
+
+      <div style="
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 18px;
+        padding: 16px;
+        margin-top: 18px;
+        box-shadow: 0 14px 34px rgba(0,0,0,.48);
+      ">
+        <div style="font-size: 14px; color: rgba(255,255,255,.62); margin-bottom: 10px; font-weight: 700;">Ссылка на подписку для ручного ввода:</div>
+        <div id="subscription-link" style="
+          font-weight: 950; 
+          word-break: break-all; 
+          margin-bottom: 12px; 
+          color: rgba(255,255,255,.92); 
+          font-size: 13px;
+          font-family: 'Courier New', monospace;
+          background: rgba(0,0,0,.35);
+          padding: 10px;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,.08);
+        ">
+          https://v2ray.hollow-vpn.example/subscription/demo_user_key_12345
+        </div>
+        <button class="btn btn-lux" id="copy-subscription-link" style="width:100%; min-height:46px;">
+          Копировать ссылку
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HELP (FAQ + Support) -->
+  <div id="help-container" class="card-base screen">
+    <button class="back-button" data-back>
+      <span class="back-icon">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
+      </span>
+      Назад
+    </button>
+
+    <div class="content-with-back">
+      <h2>FAQ</h2>
+      <p style="margin-bottom:10px;">Частые вопросы и быстрые ответы.</p>
+
+      <div class="faq-list">
+        <details class="faq">
+          <summary>Не подключается <span class="chev">▾</span></summary>
+          <div class="faq-body">
+            Проверьте: 1) подписка активна, 2) ключ добавлен в v2RayTun, 3) включён VPN в приложении.
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Куда вставить ключ <span class="chev">▾</span></summary>
+          <div class="faq-body">
+            В v2RayTun откройте "Subscriptions" → "Add" → вставьте ключ/ссылку и сохраните.
+          </div>
+        </details>
+
+        <details class="faq">
+          <summary>Оплатил — что дальше <span class="chev">▾</span></summary>
+          <div class="faq-body">
+            После оплаты вернитесь в мини-приложение → "Установка и настройка" → добавьте подписку в v2RayTun.
+          </div>
+        </details>
+      </div>
+
+      <div style="flex:1;"></div>
+
+      <button class="btn btn-lux" id="open-support-chat" style="margin-top:14px;">
+        Написать в поддержку
+      </button>
     </div>
   </div>
 
@@ -919,22 +950,6 @@
     </div>
   </div>
 
-  <!-- SUPPORT -->
-  <div id="support-container" class="card-base screen">
-    <button class="back-button" data-back>
-      <span class="back-icon">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg>
-      </span>
-      Назад
-    </button>
-
-    <div class="content-with-back" style="justify-content: center;">
-      <h2 style="text-align:center;">Поддержка</h2>
-      <p style="text-align:center; margin-bottom: 20px;">Нажмите на кнопку ниже, чтобы открыть чат с поддержкой.</p>
-      <button class="btn btn-lux" id="open-support-chat">@HollowVPN_support</button>
-    </div>
-  </div>
-
   <!-- AGREEMENT -->
   <div id="agreement-container" class="card-base screen">
     <button class="back-button" data-back>
@@ -953,7 +968,7 @@
         <p>Используя Сервис, включая Telegram-бота и связанные с ним ресурсы, пользователь подтверждает, что ознакомился с условиями настоящего Соглашения, полностью их понимает и безоговорочно принимает.</p>
         <p>Hollow VPN предоставляет пользователю программный инструмент для обеспечения защищённого сетевого соединения. Сервис не предназначен для нарушения законодательства какой-либо страны. Пользователь самостоятельно несёт ответственность за соблюдение применимого законодательства по месту своего нахождения.</p>
         <p>Услуги Сервиса предоставляются по принципу «как есть» (AS IS). Администрация не гарантирует постоянную доступность Сервиса, определённую скорость соединения, совместимость со всеми устройствами и сторонними сервисами, а также достижение каких-либо конкретных результатов при использовании Сервиса.</p>
-        <p><strong>Использование Hollow VPN означает полное и безоговорочное принятие условий настоящего Пользовательского соглашения.</strong></p>
+        <p><strong>Использование Hollow VPN означает полное и безоговорочное приняие условий настоящего Пользовательского соглашения.</strong></p>
       </div>
     </div>
   </div>
@@ -1020,10 +1035,9 @@
   </div>
 
   <script>
-    /* ================= НАСТРОЙКИ ================= */
-
     const SUPPORT_URL = "https://t.me/HollowVPN_support";
     const CONFIG_IMPORT_URL = "https://example.com/import-config";
+    const SUBSCRIPTION_KEY = "hollow://subscription/demo_key_replace_me";
 
     const PAYMENT_LINKS = [
       { url: "https://example.com/pay/card", title: "Банковская карта (РФ)", desc: "Visa, Mastercard, МИР" },
@@ -1034,7 +1048,8 @@
       ios_appstore: "https://apps.apple.com/app/id6476628951",
       android_play: "https://play.google.com/store/apps/details?id=com.v2raytun.android",
       desktop_site: "https://v2raytun.com/",
-      default:      "https://v2raytun.com/"
+      default:      "https://v2raytun.com/",
+      deeplink:     "v2raytun://"
     };
 
     const tg = window.Telegram?.WebApp;
@@ -1053,6 +1068,42 @@
       safe(()=> tg?.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, "_blank", "noopener,noreferrer"));
     };
 
+    const openV2RayTunWithFallback = () => {
+      const deepLink = URLS.deeplink;
+      const fallback = URLS.default;
+
+      let didHide = false;
+      let timerId;
+
+      const cleanup = () => {
+        if(timerId) clearTimeout(timerId);
+        document.removeEventListener("visibilitychange", onVisibility);
+        window.removeEventListener("pagehide", onPageHide);
+      };
+
+      const onVisibility = () => {
+        if(document.hidden){
+          didHide = true;
+          cleanup();
+        }
+      };
+
+      const onPageHide = () => {
+        didHide = true;
+        cleanup();
+      };
+
+      document.addEventListener("visibilitychange", onVisibility);
+      window.addEventListener("pagehide", onPageHide);
+
+      if(deepLink) openLink(deepLink);
+
+      timerId = setTimeout(() => {
+        if(!didHide) openLink(fallback);
+        cleanup();
+      }, 1200);
+    };
+
     function applyDynamicBase(){
       const baseEl = document.getElementById("app-base");
       if(!baseEl) return;
@@ -1065,7 +1116,6 @@
       }
     }
 
-    /* ================= DEVICE DETECT ================= */
     function isIOS(){
       const ua = navigator.userAgent || "";
       return /iPad|iPhone|iPod/.test(ua) || (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
@@ -1091,7 +1141,6 @@
         .replace(/'/g,"&#039;");
     }
 
-    /* ================= MINI ROUTER ================= */
     const $ = (id) => document.getElementById(id);
 
     const screens = {
@@ -1100,10 +1149,10 @@
       profile: $("profile-container"),
       payment: $("payment-container"),
       transactions: $("transactions-container"),
-      support: $("support-container"),
       agreement: $("agreement-container"),
       privacy: $("privacy-container"),
-      referral: $("referral-container")
+      referral: $("referral-container"),
+      help: $("help-container"),
     };
 
     const historyStack = ["dashboard"];
@@ -1132,7 +1181,6 @@
 
     document.querySelectorAll("[data-back]").forEach(btn => btn.addEventListener("click", goBack));
 
-    /* ================= USER / DATA ================= */
     let subscriptionStatus = "no_subscription";
     let transactions = [];
 
@@ -1160,7 +1208,7 @@
       setTimeout(() => {
         subscriptionStatus = "no_subscription";
         updateSubscriptionStatusUI({ traffic: 50 });
-      }, 400);
+      }, 350);
     }
 
     function displayTransactions(){
@@ -1206,7 +1254,31 @@
       container.appendChild(frag);
     }
 
-    /* ================= SETUP FLOW ================= */
+    async function copyTextSmart(text){
+      if(!text) return false;
+      try{
+        if(navigator.clipboard?.writeText){
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      }catch(_){}
+      try{
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        ta.style.top = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return !!ok;
+      }catch(_){}
+      return false;
+    }
+
     const setupSteps = [
       {
         key: "app", progress: 35,
@@ -1218,7 +1290,7 @@
       {
         key: "sub", progress: 70,
         title: "Подписка",
-        desc: "Добавьте подписку в v2RayTun кнопкой ниже. Telegram попросит подтвердить открытие приложения.",
+        desc: "Нажмите «Добавить подписку» — откроем v2RayTun. (Ключ копируется автоматически при входе на этот шаг.)",
         primaryText: "Добавить подписку", nextText: "Далее →", primaryAction: "import",
         icon: `<svg viewBox="0 0 24 24"><path d="M12 3c4.5 0 8 3.6 8 8.1 0 4.6-3.5 9.2-8 9.2S4 15.7 4 11.1C4 6.6 7.5 3 12 3z"></path><path d="M12 7v8"></path><path d="M8 11h8"></path></svg>`
       },
@@ -1232,27 +1304,29 @@
     ];
 
     let setupIndex = 0;
+    let lastSetupKey = null;
 
-    function progressToDeg(p){
-      const deg = (p / 100) * 360;
-      if(p >= 100) return 358.8;
-      return Math.max(0, Math.min(358.8, deg));
-    }
-
-    function animateProgress(toProgress){
-      const targetDeg = progressToDeg(toProgress) + "deg";
-      $("progress-arc").style.setProperty("--pdeg", targetDeg);
-      $("progress-soft").style.setProperty("--pdeg", targetDeg);
+    // Новая функция для обновления прогресса кольца через SVG
+    function setRingProgress(percentage) {
+      const circle = $("ring-circle");
+      if (!circle) return;
+      
+      // Общая длина окружности: 2 * π * r = 2 * π * 106 ≈ 666
+      const circumference = 666;
+      const offset = circumference - (percentage / 100) * circumference;
+      
+      circle.style.strokeDashoffset = offset;
     }
 
     function pulseRing(){
       const ring = $("progress-ring");
+      if (!ring) return;
       ring.classList.remove("ring-pulse");
       void ring.offsetWidth;
       ring.classList.add("ring-pulse");
     }
 
-    function renderSetup(withAnim=true){
+    async function renderSetup(withAnim=true){
       const s = setupSteps[setupIndex];
       $("hero-icon").innerHTML = s.icon;
       $("setup-title").textContent = s.title;
@@ -1260,20 +1334,29 @@
       $("setup-primary-btn").textContent = s.primaryText;
       $("setup-next-btn").textContent = s.nextText;
 
+      if(s.key === "sub" && lastSetupKey !== "sub"){
+        const txt = SUBSCRIPTION_KEY;
+        if(txt){
+          const ok = await copyTextSmart(txt);
+          if(ok) popup("Скопировано", "Ключ скопирован");
+          else popup("Ошибка", "Не удалось скопировать автоматически.");
+        }
+      }
+
       if(withAnim) pulseRing();
-      animateProgress(s.progress);
+      setRingProgress(s.progress);
+      lastSetupKey = s.key;
     }
 
-    /* ================= EVENTS ================= */
     $("profile-btn").addEventListener("click", async ()=>{
       haptic("medium");
       setActiveScreen("profile");
       await fetchSubscription();
     });
 
-    $("support-btn-main").addEventListener("click", ()=>{
+    $("referral-btn-main").addEventListener("click", ()=>{
       haptic("medium");
-      setActiveScreen("support");
+      setActiveScreen("referral");
     });
 
     $("setup-start-btn").addEventListener("click", ()=>{
@@ -1300,7 +1383,11 @@
         return;
       }
       if(s.primaryAction === "import"){
-        openLink(CONFIG_IMPORT_URL);
+        if(CONFIG_IMPORT_URL && CONFIG_IMPORT_URL !== "https://example.com/import-config"){
+          openLink(CONFIG_IMPORT_URL);
+        }else{
+          openV2RayTunWithFallback();
+        }
         return;
       }
       if(s.primaryAction === "finish"){
@@ -1332,9 +1419,9 @@
       setActiveScreen("referral");
     });
 
-    $("profile-support-btn").addEventListener("click", ()=>{
+    $("help-btn").addEventListener("click", ()=>{
       haptic("medium");
-      setActiveScreen("support");
+      setActiveScreen("help");
     });
 
     $("agreement-btn").addEventListener("click", ()=>{
@@ -1362,15 +1449,19 @@
     $("copy-referral-link").addEventListener("click", async ()=>{
       haptic("light");
       const txt = $("referral-link")?.innerText || "";
-      try{
-        await navigator.clipboard.writeText(txt);
-        popup("Скопировано", "Ссылка скопирована в буфер обмена.");
-      }catch(_){
-        popup("Ошибка", "Не удалось скопировать автоматически.");
-      }
+      const ok = await copyTextSmart(txt);
+      if(ok) popup("Скопировано", "Ссылка скопирована в буфер обмена.");
+      else popup("Ошибка", "Не удалось скопировать автоматически.");
     });
 
-    /* ================= INIT ================= */
+    $("copy-subscription-link").addEventListener("click", async ()=>{
+      haptic("light");
+      const txt = $("subscription-link")?.innerText || "";
+      const ok = await copyTextSmart(txt);
+      if(ok) popup("Скопировано", "Ссылка на подписку скопирована в буфер обмена.");
+      else popup("Ошибка", "Не удалось скопировать автоматически.");
+    });
+
     function pickNiceName(user){
       const first = (user?.first_name || "").trim();
       const last  = (user?.last_name || "").trim();
@@ -1395,7 +1486,7 @@
       if(user){
         const niceName = pickNiceName(user);
 
-        $("user-name").innerText = `Приветствую, ${niceName}!`;
+        $("user-name").innerText = niceName;
         $("user-id").innerText = "ID: " + user.id;
 
         const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ").trim();
@@ -1405,15 +1496,14 @@
         const ref = $("referral-link");
         if(ref) ref.innerText = `https://t.me/HollowVPN_bot?start=ref_${user.id}`;
       }else{
-        $("user-name").innerText = "Приветствую!";
+        $("user-name").innerText = "Тестовый пользователь";
         $("user-id").innerText = "ID: 000000";
         $("profile-name").innerText = "Тестовый Пользователь";
         $("profile-id").innerText = "000000";
       }
 
-      $("progress-arc").style.setProperty("--pdeg", "0deg");
-      $("progress-soft").style.setProperty("--pdeg", "0deg");
-
+      // Устанавливаем начальный прогресс
+      setRingProgress(0);
       await fetchSubscription();
     })();
   </script>
