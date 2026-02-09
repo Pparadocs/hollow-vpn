@@ -649,11 +649,418 @@
       font-weight: 900;
     }
 
+    /* ========== SUBSCRIPTION BUILDER MODAL ========== */
+    .sub-modal-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      padding: 0;
+    }
+
+    .sub-modal-overlay.is-visible{
+      display: flex;
+      opacity: 1;
+    }
+
+    .sub-modal-sheet{
+      background:
+        radial-gradient(900px 420px at 50% -30%, rgba(0, 229, 255, 0.08), transparent 70%),
+        radial-gradient(700px 500px at 50% 100%, rgba(255, 32, 147, 0.06), transparent 70%),
+        linear-gradient(180deg, rgba(15,15,18,0.98), rgba(10,10,12,0.99)),
+        rgba(10,10,12,0.95);
+
+      border-radius: 32px 32px 0 0;
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      max-height: 92dvh;
+      position: relative;
+      box-shadow: 
+        0 -12px 60px rgba(0,0,0,0.65),
+        0 0 0 1px rgba(255,255,255,0.08) inset;
+      
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .sub-modal-overlay.is-visible .sub-modal-sheet{
+      transform: translateY(0);
+    }
+
+    .sub-modal-header{
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .sub-modal-drag-indicator{
+      width: 48px;
+      height: 4px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 2px;
+      margin: 0 auto 18px;
+      transition: background 0.2s;
+    }
+
+    .sub-modal-close{
+      position: absolute;
+      top: 22px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 10;
+    }
+
+    .sub-modal-close:hover{
+      background: rgba(255,255,255,0.10);
+      transform: scale(1.05);
+    }
+
+    .sub-modal-close:active{
+      transform: scale(0.95);
+    }
+
+    .sub-modal-close svg{
+      width: 18px;
+      height: 18px;
+      stroke: rgba(255,255,255,0.75);
+      stroke-width: 2.5;
+    }
+
+    .sub-modal-title{
+      font-size: 26px;
+      font-weight: 950;
+      color: var(--text);
+      margin: 0 0 6px;
+      text-shadow: 0 8px 24px rgba(0,0,0,0.55);
+      letter-spacing: 0.3px;
+    }
+
+    .sub-modal-subtitle{
+      font-size: 14px;
+      color: rgba(255,255,255,0.62);
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .sub-modal-content{
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 20px 24px 24px;
+    }
+
+    .sub-modal-content::-webkit-scrollbar{
+      display: none;
+    }
+
+    /* Блок устройств */
+    .sub-devices-block{
+      margin-bottom: 24px;
+    }
+
+    .sub-section-label{
+      font-size: 13px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.65);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .sub-devices-control{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      background: 
+        radial-gradient(400px 200px at 50% 0%, rgba(255,255,255,0.04), transparent),
+        rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.42);
+    }
+
+    .sub-devices-label{
+      font-size: 15px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .sub-stepper{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .sub-stepper-btn{
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sub-stepper-btn::before{
+      content: "";
+      position: absolute;
+      inset: -30px -50px auto -50px;
+      height: 80px;
+      background: radial-gradient(closest-side, rgba(255,255,255,0.45), transparent 70%);
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .sub-stepper-btn:active{
+      transform: scale(0.92);
+    }
+
+    .sub-stepper-btn:disabled{
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .sub-stepper-btn svg{
+      width: 18px;
+      height: 18px;
+      stroke: #0b0b0f;
+      stroke-width: 3;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sub-stepper-value{
+      font-size: 20px;
+      font-weight: 950;
+      color: var(--text);
+      min-width: 28px;
+      text-align: center;
+      text-shadow: 0 4px 16px rgba(0,0,0,0.45);
+    }
+
+    /* Блок тарифов */
+    .sub-plans-block{
+      margin-bottom: 20px;
+    }
+
+    .sub-plans-grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .sub-plan-card{
+      position: relative;
+      padding: 18px 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid rgba(255,255,255,0.10);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+
+    .sub-plan-card::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .sub-plan-card:active{
+      transform: scale(0.97);
+    }
+
+    .sub-plan-card.is-selected{
+      border-color: var(--accent-cyan);
+      box-shadow: 
+        0 0 0 1px var(--accent-cyan),
+        0 0 28px rgba(0, 229, 255, 0.35),
+        0 12px 32px rgba(0,0,0,0.50);
+    }
+
+    .sub-plan-card.is-selected::before{
+      opacity: 0.08;
+    }
+
+    .sub-plan-badge{
+      position: absolute;
+      top: -1px;
+      right: 12px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+      color: #0b0b0f;
+      font-size: 10px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.40);
+    }
+
+    .sub-plan-content{
+      position: relative;
+      z-index: 1;
+    }
+
+    .sub-plan-period{
+      font-size: 18px;
+      font-weight: 950;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .sub-plan-price{
+      font-size: 24px;
+      font-weight: 950;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: block;
+      text-shadow: 0 4px 16px rgba(0,0,0,0.45);
+    }
+
+    .sub-plan-detail{
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+      font-weight: 700;
+    }
+
+    .sub-plan-savings{
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--accent-cyan);
+      background: rgba(0, 229, 255, 0.12);
+      padding: 3px 8px;
+      border-radius: 8px;
+      text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+    }
+
+    /* Футер с кнопкой */
+    .sub-modal-footer{
+      padding: 16px 24px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+
+    .sub-pay-button{
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      padding: 18px;
+      font-size: 17px;
+      font-weight: 950;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 60px;
+      position: relative;
+      z-index: 1;
+      
+      background: linear-gradient(
+        90deg,
+        var(--accent-cyan) 0%,
+        var(--accent-cyan-2) 55%,
+        var(--accent-pink) 100%
+      );
+      color: #0b0b0f;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.65);
+      overflow: hidden;
+    }
+
+    .sub-pay-button::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        115deg,
+        transparent 28%,
+        rgba(255,255,255,0.45) 44%,
+        rgba(255,255,255,0.65) 50%,
+        rgba(255,255,255,0.45) 56%,
+        transparent 72%
+      );
+      mix-blend-mode: overlay;
+      transform: translateX(-110%);
+      animation: paySheen 4.5s infinite;
+      pointer-events: none;
+      width: 220%;
+      height: 100%;
+      opacity: 0.5;
+    }
+
+    @keyframes paySheen{
+      0%   { transform: translateX(-110%) skewX(-14deg); }
+      14%  { transform: translateX(110%)  skewX(-14deg); }
+      100% { transform: translateX(110%)  skewX(-14deg); }
+    }
+
+    .sub-pay-button:active{
+      transform: scale(0.98);
+    }
+
     @media (prefers-reduced-motion: reduce){
       .fade-in{ animation: none; }
       .btn-buy::before{ animation: none; opacity: .25; }
       .ring-pulse{ animation: none; }
       .ring-progress{ transition: none; }
+      .sub-pay-button::before{ animation: none; opacity: 0.3; }
+      .sub-modal-sheet{ transition: none; }
+      .sub-modal-overlay{ transition: none; }
+    }
+
+    @media (min-width: 820px){
+      .sub-modal-sheet{
+        border-radius: 32px;
+        max-height: 88vh;
+        margin-bottom: 20px;
+      }
     }
   </style>
 </head>
@@ -1034,6 +1441,100 @@
     </div>
   </div>
 
+  <!-- ========== SUBSCRIPTION BUILDER MODAL ========== -->
+  <div id="sub-modal-overlay" class="sub-modal-overlay">
+    <div id="sub-modal-sheet" class="sub-modal-sheet">
+      <!-- Header -->
+      <div class="sub-modal-header">
+        <div class="sub-modal-drag-indicator"></div>
+        <button class="sub-modal-close" id="sub-modal-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <div class="sub-modal-title">Выбор тарифа</div>
+        <div class="sub-modal-subtitle">Выберите период и количество устройств</div>
+      </div>
+
+      <!-- Content -->
+      <div class="sub-modal-content">
+        <!-- Devices Block -->
+        <div class="sub-devices-block">
+          <div class="sub-section-label">Устройства</div>
+          <div class="sub-devices-control">
+            <div class="sub-devices-label">Количество устройств</div>
+            <div class="sub-stepper">
+              <button class="sub-stepper-btn" id="sub-devices-minus">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                </svg>
+              </button>
+              <div class="sub-stepper-value" id="sub-devices-count">1</div>
+              <button class="sub-stepper-btn" id="sub-devices-plus">
+                <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plans Block -->
+        <div class="sub-plans-block">
+          <div class="sub-section-label">Период подписки</div>
+          <div class="sub-plans-grid">
+            <!-- 1 Month -->
+            <div class="sub-plan-card" data-plan="1m">
+              <div class="sub-plan-content">
+                <span class="sub-plan-period">1 месяц</span>
+                <span class="sub-plan-price">199 ₽</span>
+                <span class="sub-plan-detail">199 ₽/мес</span>
+              </div>
+            </div>
+
+            <!-- 3 Months -->
+            <div class="sub-plan-card" data-plan="3m">
+              <div class="sub-plan-content">
+                <span class="sub-plan-period">3 месяца</span>
+                <span class="sub-plan-price">399 ₽</span>
+                <span class="sub-plan-detail">133 ₽/мес</span>
+                <span class="sub-plan-savings">−33%</span>
+              </div>
+            </div>
+
+            <!-- 6 Months -->
+            <div class="sub-plan-card is-selected" data-plan="6m">
+              <div class="sub-plan-badge">Популярно</div>
+              <div class="sub-plan-content">
+                <span class="sub-plan-period">6 месяцев</span>
+                <span class="sub-plan-price">699 ₽</span>
+                <span class="sub-plan-detail">117 ₽/мес</span>
+                <span class="sub-plan-savings">−41%</span>
+              </div>
+            </div>
+
+            <!-- 1 Year -->
+            <div class="sub-plan-card" data-plan="1y">
+              <div class="sub-plan-content">
+                <span class="sub-plan-period">1 год</span>
+                <span class="sub-plan-price">1299 ₽</span>
+                <span class="sub-plan-detail">108 ₽/мес</span>
+                <span class="sub-plan-savings">−46%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="sub-modal-footer">
+        <button class="sub-pay-button" id="sub-pay-button">
+          Оплатить <span id="sub-total-price">699 ₽</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SUPPORT_URL = "https://t.me/HollowVPN_support";
     const CONFIG_IMPORT_URL = "https://example.com/import-config";
@@ -1306,12 +1807,10 @@
     let setupIndex = 0;
     let lastSetupKey = null;
 
-    // Новая функция для обновления прогресса кольца через SVG
     function setRingProgress(percentage) {
       const circle = $("ring-circle");
       if (!circle) return;
       
-      // Общая длина окружности: 2 * π * r = 2 * π * 106 ≈ 666
       const circumference = 666;
       const offset = circumference - (percentage / 100) * circumference;
       
@@ -1369,8 +1868,7 @@
 
     $("buy-btn").addEventListener("click", ()=>{
       haptic("medium");
-      displayPaymentLinks();
-      setActiveScreen("payment");
+      openSubscriptionBuilder();
     });
 
     $("setup-primary-btn").addEventListener("click", ()=>{
@@ -1468,6 +1966,244 @@
       return (first || last || "Друг");
     }
 
+    // ========== SUBSCRIPTION BUILDER LOGIC ==========
+    
+    const PLAN_PRICES = {
+      "1m": 199,
+      "3m": 399,
+      "6m": 699,
+      "1y": 1299
+    };
+
+    const DEVICE_EXTRA_PRICE = 100; // Цена за каждое дополнительное устройство
+
+    let subDevicesCount = 1;
+    let subSelectedPlan = "6m";
+
+    function updateSubTotal(){
+      const basePrice = PLAN_PRICES[subSelectedPlan] || 0;
+      const extraDevices = Math.max(0, subDevicesCount - 1);
+      const total = basePrice + (extraDevices * DEVICE_EXTRA_PRICE);
+      $("sub-total-price").textContent = `${total} ₽`;
+    }
+
+    function openSubscriptionBuilder(){
+      const overlay = $("sub-modal-overlay");
+      const sheet = $("sub-modal-sheet");
+      
+      overlay.classList.add("is-visible");
+      
+      // Reset scroll
+      const content = sheet.querySelector(".sub-modal-content");
+      if(content) content.scrollTop = 0;
+      
+      updateSubTotal();
+      
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeSubscriptionBuilder(){
+      const overlay = $("sub-modal-overlay");
+      overlay.classList.remove("is-visible");
+      
+      // Restore body scroll
+      document.body.style.overflow = "";
+      
+      haptic("light");
+    }
+
+    // Close button
+    $("sub-modal-close").addEventListener("click", closeSubscriptionBuilder);
+
+    // Click outside
+    $("sub-modal-overlay").addEventListener("click", (e) => {
+      if(e.target.id === "sub-modal-overlay"){
+        closeSubscriptionBuilder();
+      }
+    });
+
+    // Swipe down to close
+    let touchStartY = 0;
+    let touchCurrentY = 0;
+    let isDragging = false;
+
+    const sheet = $("sub-modal-sheet");
+    const dragIndicator = sheet.querySelector(".sub-modal-drag-indicator");
+
+    dragIndicator.addEventListener("touchstart", (e) => {
+      touchStartY = e.touches[0].clientY;
+      isDragging = true;
+      sheet.style.transition = "none";
+    });
+
+    dragIndicator.addEventListener("touchmove", (e) => {
+      if(!isDragging) return;
+      touchCurrentY = e.touches[0].clientY;
+      const diff = touchCurrentY - touchStartY;
+      
+      if(diff > 0){
+        sheet.style.transform = `translateY(${diff}px)`;
+      }
+    });
+
+    dragIndicator.addEventListener("touchend", () => {
+      if(!isDragging) return;
+      isDragging = false;
+      
+      const diff = touchCurrentY - touchStartY;
+      sheet.style.transition = "";
+      
+      if(diff > 100){
+        closeSubscriptionBuilder();
+      } else {
+        sheet.style.transform = "translateY(0)";
+      }
+    });
+
+    // Devices stepper
+    $("sub-devices-minus").addEventListener("click", () => {
+      if(subDevicesCount > 1){
+        subDevicesCount--;
+        $("sub-devices-count").textContent = subDevicesCount;
+        updateSubTotal();
+        updateStepperButtons();
+        haptic("light");
+      }
+    });
+
+    $("sub-devices-plus").addEventListener("click", () => {
+      if(subDevicesCount < 5){
+        subDevicesCount++;
+        $("sub-devices-count").textContent = subDevicesCount;
+        updateSubTotal();
+        updateStepperButtons();
+        haptic("light");
+      }
+    });
+
+    // Update stepper buttons state
+    function updateStepperButtons(){
+      $("sub-devices-minus").disabled = subDevicesCount <= 1;
+      $("sub-devices-plus").disabled = subDevicesCount >= 5;
+    }
+
+    // Plan selection
+    document.querySelectorAll(".sub-plan-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".sub-plan-card").forEach(c => c.classList.remove("is-selected"));
+        card.classList.add("is-selected");
+        
+        subSelectedPlan = card.dataset.plan;
+        updateSubTotal();
+        haptic("medium");
+      });
+    });
+
+    // Pay button
+    $("sub-pay-button").addEventListener("click", async () => {
+      haptic("medium");
+      
+      const user = tg?.initDataUnsafe?.user;
+      if (!user) {
+        popup("Ошибка", "Не удалось получить данные пользователя");
+        return;
+      }
+
+      try {
+        // Показываем индикатор загрузки
+        const payBtn = $("sub-pay-button");
+        const originalText = payBtn.innerHTML;
+        payBtn.innerHTML = "⏳ Создание платежа...";
+        payBtn.disabled = true;
+
+        const response = await fetch(`${window.location.origin}/api/payments/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            telegram_id: user.id,
+            plan: subSelectedPlan,
+            devices: subDevicesCount,
+            username: user.username,
+            first_name: user.first_name
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.payment_url) {
+          closeSubscriptionBuilder();
+          // Открываем платёжную страницу Platega
+          openLink(data.payment_url);
+        } else {
+          throw new Error("No payment_url in response");
+        }
+
+      } catch (error) {
+        console.error("❌ Payment creation error:", error);
+        popup("Ошибка", "Не удалось создать платеж. Попробуйте позже.");
+        
+        // Восстанавливаем кнопку
+        const payBtn = $("sub-pay-button");
+        payBtn.innerHTML = `Оплатить <span id="sub-total-price">${calculate_amount(subSelectedPlan, subDevicesCount)} ₽</span>`;
+        payBtn.disabled = false;
+      }
+    });
+
+    // Initial stepper state
+    updateStepperButtons();
+
+    // Update subscription status
+    async function updateSubscriptionStatus() {
+      const user = tg?.initDataUnsafe?.user;
+      if (!user) return;
+
+      try {
+        const response = await fetch(`${window.location.origin}/api/subscription/status?telegram_id=${user.id}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        const statusText = $("subscription-status");
+        const profileStatusText = $("profile-subscription-status");
+
+        if (data.status === "active") {
+          const daysLeft = data.days_left || 0;
+          const planNames = {
+            "1m": "1 месяц",
+            "3m": "3 месяца", 
+            "6m": "6 месяцев",
+            "1y": "1 год"
+          };
+          const planText = planNames[data.plan] || data.plan;
+          const deviceText = data.devices === 1 ? "1 устройство" : `${data.devices} устройства`;
+          
+          if (statusText) {
+            statusText.textContent = `активна • ${planText} • ${daysLeft} дней`;
+          }
+          if (profileStatusText) {
+            profileStatusText.textContent = `Активна (${daysLeft} дней, ${deviceText})`;
+          }
+        } else {
+          if (statusText) {
+            statusText.textContent = "подписка не активна";
+          }
+          if (profileStatusText) {
+            profileStatusText.textContent = "Не оплачено";
+          }
+        }
+
+      } catch (error) {
+        console.error("❌ Error updating subscription status:", error);
+      }
+    }
+
     (async function init(){
       applyDynamicBase();
 
@@ -1502,11 +2238,12 @@
         $("profile-id").innerText = "000000";
       }
 
-      // Устанавливаем начальный прогресс
       setRingProgress(0);
       await fetchSubscription();
+      updateSubscriptionStatus();
+      setInterval(updateSubscriptionStatus, 30000);
     })();
   </script>
 </body>
 </html>
-<!-- deploy -->
+
